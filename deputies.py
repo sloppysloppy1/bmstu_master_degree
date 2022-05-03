@@ -29,8 +29,13 @@ for row in persons_table:
     deputy_url = base_url[:-6] + __name['href']
     deputy_page_html = BeautifulSoup(requests.get(deputy_url).text, features='lxml')
 
+    place_of_birth, birth_date, education, religion, degree, gender = '', '', '', '', '', 'm'
+    # пол
+    deputy_page_text = deputy_page_html.text.lower()
+    if (deputy_page_text.find('родилась') != -1 or deputy_page_text.find('окончила') != -1
+        or deputy_page_text.find('замужем') != -1):
+        gender = 'w'
     info_table = deputy_page_html.find('table', {'class': 'infobox'}).find('tbody')
-    place_of_birth, birth_date, education, religion, degree = '', '', '', '', ''
     # день рождения
     try:
         birth_date = info_table.find('span', {'class': 'bday'}).text
@@ -88,13 +93,13 @@ for row in persons_table:
                 religion = __religion.text
 
     cur.execute('''insert or replace into deputies
-                    (name, cnv, consignment, county, birth_date,
+                    (name, gender, cnv, consignment, county, birth_date,
                     place_of_birth, education, religion, degree)
-                values (?, ?, ?, ?, ?, ?, ?, ?, ?)''',
-                (name, 3, consignment, county, birth_date, place_of_birth, education, religion, degree))
+                values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',
+                (name, gender, 3, consignment, county, birth_date, place_of_birth, education, religion, degree))
     con.commit()
 
-    print(name, consignment, county, birth_date, place_of_birth, education, religion, degree)
+    print(name, gender, consignment, county, birth_date, place_of_birth, education, religion, degree)
 
 
 con.close()

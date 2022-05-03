@@ -3,7 +3,7 @@ con = sqlite3.connect('db')
 cur = con.cursor()
 
 def tab_bills():
-    #cur.execute('drop table bills')
+    cur.execute('drop table bills')
     cur.execute('''create table bills (
                     id integer primary key,
                     bill_num text not null unique,
@@ -26,7 +26,9 @@ def tab_bills():
                     date5 text,
                     date6 text,
                     date7 text,
-                    date8 text );''')
+                    date8 text,
+                    dl_flg varchar(1),
+                    upd_flg varchar(1));''')
     con.commit()
 
 def tab_deps():
@@ -34,6 +36,7 @@ def tab_deps():
     cur.execute('''create table deputies (
                     id integer primary key,
                     name text not null unique,
+                    gender text,
                     cnv tinyint not null,
                     consignment text,
                     county text,
@@ -44,6 +47,9 @@ def tab_deps():
                     religion text );''')
     con.commit()
 
-tab_deps()
+def alter_bills():
+    #cur.execute('alter table bills add column dl_flg varchar(1) default 0')
+    cur.execute('alter table bills add column upd_flg varchar(1) default 0')
+alter_bills()
 
 con.close()
